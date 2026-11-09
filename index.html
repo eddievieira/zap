@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f7a63">
+<title>Zap</title>
+<style>
+:root{--bg:#eef3f2;--card:#fff;--fg:#15201e;--muted:#5a6b67;--accent:#0f7a63;--on:#fff;--line:#d3dfdc;--warn:#a14a12}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1615;--card:#172120;--fg:#e6efed;--muted:#94a8a3;--accent:#3fc4a1;--on:#08201a;--line:#273533;--warn:#f0a46c;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px system-ui,sans-serif}
+main{max-width:30rem;margin:0 auto;padding:24px 16px;display:grid;gap:14px}
+h1{font-size:24px;margin:0}
+label{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+input,textarea{width:100%;box-sizing:border-box;font:20px monospace;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+textarea{font:17px system-ui,sans-serif;min-height:70px}
+#confere{font:18px monospace;margin:0;min-height:1.4em}
+#confere.aviso{font:15px system-ui,sans-serif;color:var(--warn)}
+#abrir{display:block;text-align:center;padding:20px;border-radius:14px;background:var(--accent);color:var(--on);font-weight:800;font-size:20px;text-decoration:none}
+#abrir.off{opacity:.35;pointer-events:none}
+button{justify-self:start;border:0;background:none;color:var(--muted);font:600 15px system-ui,sans-serif;text-decoration:underline;padding:0}
+</style>
+</head>
+<body>
+<main>
+<h1>Abrir conversa no WhatsApp</h1>
+<label for="n">Número (sem DDD, uso o 46)</label>
+<input id="n" type="tel" inputmode="tel" autocomplete="off" placeholder="Ex.: (46) 99123-4567" autofocus>
+<p id="confere"></p>
+<label for="m">Mensagem (opcional)</label>
+<textarea id="m"></textarea>
+<a id="abrir" class="off" href="#">Abrir no WhatsApp</a>
+<button id="limpar" type="button">Limpar</button>
+</main>
+<script>
+function normalizar(t){var d=t.replace(/\D/g,"");if(t.trim().charAt(0)=="+"&&d.indexOf("55")!=0)return d.length>=8?d:null;d=d.replace(/^0+/,"");
+if(d.length==13||d.length==12)return d.indexOf("55")==0?d:null;if(d.length==11||d.length==10)return"55"+d;if(d.length==9||d.length==8)return"5546"+d;return null}
+function formatar(n){if(n.indexOf("55")!=0)return"+"+n;var r=n.slice(4);return"+55 ("+n.slice(2,4)+") "+r.slice(0,-4)+"-"+r.slice(-4)}
+var N=document.getElementById("n"),M=document.getElementById("m"),C=document.getElementById("confere"),A=document.getElementById("abrir");
+function at(){var n=normalizar(N.value),msg=M.value.trim();if(!n){C.textContent=N.value.trim()?"Número incompleto. Confere se faltou algum dígito.":"";C.className="aviso";A.className="off";A.href="#";return}
+C.textContent=formatar(n);C.className="";A.className="";A.href="https://wa.me/"+n+(msg?"?text="+encodeURIComponent(msg):"")}
+N.oninput=M.oninput=at;document.getElementById("limpar").onclick=function(){N.value="";M.value="";at();N.focus()};at();
+</script>
+</body>
+</html>
