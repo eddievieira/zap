@@ -30,10 +30,10 @@ button{justify-self:start;border:0;background:none;color:var(--muted);font:600 1
 <label for="n">Número (sem DDD, uso o 46)</label>
 <input id="n" type="tel" inputmode="tel" autocomplete="off" placeholder="Ex.: (46) 99123-4567" autofocus>
 <p id="confere"></p>
-<label for="m">Mensagem (opcional)</label>
+<label for="m">Mensagem (opcional, fica salva)</label>
 <textarea id="m"></textarea>
 <a id="abrir" class="off" href="#">Abrir no WhatsApp</a>
-<button id="limpar" type="button">Limpar</button>
+<button id="limpar" type="button">Limpar número</button>
 </main>
 <script>
 function normalizar(t){var d=t.replace(/\D/g,"");if(t.trim().charAt(0)=="+"&&d.indexOf("55")!=0)return d.length>=8?d:null;d=d.replace(/^0+/,"");
@@ -42,7 +42,8 @@ function formatar(n){if(n.indexOf("55")!=0)return"+"+n;var r=n.slice(4);return"+
 var N=document.getElementById("n"),M=document.getElementById("m"),C=document.getElementById("confere"),A=document.getElementById("abrir");
 function at(){var n=normalizar(N.value),msg=M.value.trim();if(!n){C.textContent=N.value.trim()?"Número incompleto. Confere se faltou algum dígito.":"";C.className="aviso";A.className="off";A.href="#";return}
 C.textContent=formatar(n);C.className="";A.className="";A.href="https://wa.me/"+n+(msg?"?text="+encodeURIComponent(msg):"")}
-N.oninput=M.oninput=at;document.getElementById("limpar").onclick=function(){N.value="";M.value="";at();N.focus()};at();
+try{M.value=localStorage.getItem("zap-msg")||""}catch(e){}
+N.oninput=at;M.oninput=function(){try{localStorage.setItem("zap-msg",M.value)}catch(e){}at()};document.getElementById("limpar").onclick=function(){N.value="";at();N.focus()};at();
 </script>
 </body>
 </html>
