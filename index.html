@@ -12,53 +12,95 @@
 :root{--bg:#eef3f2;--card:#fff;--fg:#15201e;--muted:#5a6b67;--accent:#0f7a63;--on:#fff;--line:#d3dfdc;--warn:#a14a12}
 @media (prefers-color-scheme:dark){:root{--bg:#0f1615;--card:#172120;--fg:#e6efed;--muted:#94a8a3;--accent:#3fc4a1;--on:#08201a;--line:#273533;--warn:#f0a46c;color-scheme:dark}}
 body{margin:0;background:var(--bg);color:var(--fg);font:17px system-ui,sans-serif}
-main{max-width:30rem;margin:0 auto;padding:24px 16px;display:grid;gap:14px}
-h1{font-size:24px;margin:0}
+main{max-width:30rem;margin:0 auto;padding:16px 16px 24px}
+section{display:grid;gap:14px}
+[hidden]{display:none!important}
+.abas{display:flex;gap:8px;margin-bottom:18px}
+.abas button{flex:1;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);font:700 17px system-ui,sans-serif;text-decoration:none}
+.abas button[aria-pressed=true]{background:var(--accent);color:var(--on);border-color:var(--accent)}
 label{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-textarea{width:100%;box-sizing:border-box;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;font:17px system-ui,sans-serif;min-height:70px}
-#n{font:20px monospace;min-height:56px}
+input,textarea{width:100%;box-sizing:border-box;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;font:17px system-ui,sans-serif}
+textarea{min-height:70px}
+#n{font:20px monospace}
+#ln{font:17px monospace;min-height:120px}
+.dica{margin:-8px 0 0;color:var(--muted);font-size:14px}
+#confere{font:18px monospace;margin:0;min-height:1.4em}
+#confere.aviso{font:15px system-ui,sans-serif;color:var(--warn)}
+#abrir{display:block;text-align:center;padding:20px;border-radius:14px;background:var(--accent);color:var(--on);font-weight:800;font-size:20px;text-decoration:none}
+#abrir.off{opacity:.35;pointer-events:none}
 #lista{display:grid;gap:10px;margin:0;padding:0;list-style:none}
 #lista li{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 10px 10px 14px}
-#lista span{flex:1;font:18px monospace;min-width:0;overflow-wrap:anywhere}
+#lista div{flex:1;min-width:0;overflow-wrap:anywhere}
+#lista b{display:block;font-size:18px}
+#lista small{font:15px monospace;color:var(--muted)}
 #lista a{padding:14px 18px;border-radius:10px;background:var(--accent);color:var(--on);font-weight:800;text-decoration:none}
 #lista li.ok{opacity:.45}
-#lista li.ok span{text-decoration:line-through}
+#lista li.ok b{text-decoration:line-through}
 #lista li.ok a{background:var(--line);color:var(--fg)}
-#lista li.ruim span{font:15px system-ui,sans-serif;color:var(--warn)}
+#lista li.ruim small{font:15px system-ui,sans-serif;color:var(--warn)}
 #conta{margin:0;color:var(--muted);font-size:15px}
-button{justify-self:start;border:0;background:none;color:var(--muted);font:600 15px system-ui,sans-serif;text-decoration:underline;padding:0}
+.limpar{justify-self:start;border:0;background:none;color:var(--muted);font:600 15px system-ui,sans-serif;text-decoration:underline;padding:0}
 </style>
 </head>
 <body>
 <main>
-<h1>Abrir conversa no WhatsApp</h1>
-<label for="n">Números (um por linha, sem DDD uso o 46)</label>
-<textarea id="n" inputmode="tel" autocomplete="off" placeholder="(46) 99123-4567" autofocus></textarea>
+<div class="abas"><button type="button" data-aba="um">Um número</button><button type="button" data-aba="entregas">Entregas</button></div>
+
+<section id="um">
+<label for="n">Número (sem DDD, uso o 46)</label>
+<input id="n" type="tel" inputmode="tel" autocomplete="off" placeholder="Ex.: (46) 99123-4567">
+<p id="confere"></p>
 <label for="m">Mensagem (opcional, fica salva)</label>
 <textarea id="m"></textarea>
+<a id="abrir" class="off" href="#">Abrir no WhatsApp</a>
+<button class="limpar" id="limpar" type="button">Limpar número</button>
+</section>
+
+<section id="entregas">
+<label for="ln">Paradas: nome, depois o número</label>
+<textarea id="ln" autocomplete="off" placeholder="88 APAE 46 99123-4567&#10;89 Loja X: 99876-5432"></textarea>
+<p class="dica">Uma por linha. O nome vai no fim da mensagem, pra tu saber de quem é a resposta.</p>
+<label for="lm">Mensagem</label>
+<textarea id="lm"></textarea>
 <p id="conta"></p>
 <ul id="lista"></ul>
-<button id="limpar" type="button">Limpar números</button>
+<button class="limpar" id="llimpar" type="button">Limpar paradas</button>
+</section>
 </main>
 <script>
 function normalizar(t){var d=t.replace(/\D/g,"");if(t.trim().charAt(0)=="+"&&d.indexOf("55")!=0)return d.length>=8?d:null;d=d.replace(/^0+/,"");
 if(d.length==13||d.length==12)return d.indexOf("55")==0?d:null;if(d.length==11||d.length==10)return"55"+d;if(d.length==9||d.length==8)return"5546"+d;return null}
 function formatar(n){if(n.indexOf("55")!=0)return"+"+n;var r=n.slice(4);return"+55 ("+n.slice(2,4)+") "+r.slice(0,-4)+"-"+r.slice(-4)}
+// "88 APAE 46 99123-4567" -> nome "88 APAE"; o número é o que vem depois da última letra ou ":"
+function parada(l){var m=l.match(/^(.*[A-Za-zÀ-ÿ:])([^A-Za-zÀ-ÿ:]*)$/);return m?{nome:m[1].replace(/:$/,"").trim(),num:m[2]}:{nome:"",num:l}}
 function ler(k){try{return localStorage.getItem(k)||""}catch(e){return""}}
 function gravar(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-var N=document.getElementById("n"),M=document.getElementById("m"),L=document.getElementById("lista"),C=document.getElementById("conta");
-var feitos=JSON.parse(ler("zap-feitos")||"{}");
-function at(){var msg=M.value.trim(),linhas=N.value.split(/[\n,;]+/).filter(function(l){return l.trim()}),vistos={},ok=0,tot=0;L.innerHTML="";
-linhas.forEach(function(l){var n=normalizar(l),li=document.createElement("li"),s=document.createElement("span");li.appendChild(s);
-if(!n){li.className="ruim";s.textContent=l.trim()+": número incompleto";L.appendChild(li);return}
-if(vistos[n])return;vistos[n]=1;tot++;if(feitos[n]){li.className="ok";ok++}
-var a=document.createElement("a");a.textContent=feitos[n]?"De novo":"Enviar";a.href="https://wa.me/"+n+(msg?"?text="+encodeURIComponent(msg):"");
-a.onclick=function(){feitos[n]=1;gravar("zap-feitos",JSON.stringify(feitos));setTimeout(at,500)};
-s.textContent=formatar(n);li.appendChild(a);L.appendChild(li)});
-C.textContent=tot>1?ok+" de "+tot+" enviados":""}
-N.value=ler("zap-nums");M.value=ler("zap-msg");
-N.oninput=function(){gravar("zap-nums",N.value);at()};M.oninput=function(){gravar("zap-msg",M.value);at()};
-document.getElementById("limpar").onclick=function(){N.value="";feitos={};gravar("zap-nums","");gravar("zap-feitos","{}");at();N.focus()};at();
+function $(id){return document.getElementById(id)}
+function link(n,msg){return"https://wa.me/"+n+(msg?"?text="+encodeURIComponent(msg):"")}
+
+function aba(a){gravar("zap-aba",a);document.querySelectorAll(".abas button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.aba==a)});$("um").hidden=a!="um";$("entregas").hidden=a=="um"}
+document.querySelectorAll(".abas button").forEach(function(b){b.onclick=function(){aba(b.dataset.aba)}});
+
+var N=$("n"),M=$("m"),C=$("confere"),A=$("abrir");
+function at(){var n=normalizar(N.value);if(!n){C.textContent=N.value.trim()?"Número incompleto. Confere se faltou algum dígito.":"";C.className="aviso";A.className="off";A.href="#";return}
+C.textContent=formatar(n);C.className="";A.className="";A.href=link(n,M.value.trim())}
+N.oninput=at;M.oninput=function(){gravar("zap-msg",M.value);at()};$("limpar").onclick=function(){N.value="";at();N.focus()};
+
+var LN=$("ln"),LM=$("lm"),L=$("lista"),feitos=JSON.parse(ler("zap-feitos")||"{}");
+function lat(){var msg=LM.value.trim(),vistos={},ok=0,tot=0;L.innerHTML="";
+LN.value.split("\n").filter(function(l){return l.trim()}).forEach(function(l){var p=parada(l),n=normalizar(p.num),li=document.createElement("li"),d=document.createElement("div"),b=document.createElement("b"),s=document.createElement("small");
+b.textContent=p.nome||"(sem nome)";d.appendChild(b);d.appendChild(s);li.appendChild(d);L.appendChild(li);
+if(!n){li.className="ruim";s.textContent=p.num.trim()?"número incompleto":"faltou o número";return}
+s.textContent=formatar(n);if(vistos[n]){li.className="ruim";s.textContent="número repetido";return}vistos[n]=1;tot++;if(feitos[n]){li.className="ok";ok++}
+var a=document.createElement("a");a.textContent=feitos[n]?"De novo":"Enviar";a.href=link(n,msg+(p.nome?(msg?" ":"")+"(ref. "+p.nome+")":""));
+a.onclick=function(){feitos[n]=1;gravar("zap-feitos",JSON.stringify(feitos));setTimeout(lat,500)};li.appendChild(a)});
+$("conta").textContent=tot?ok+" de "+tot+" enviados":""}
+LN.oninput=function(){gravar("zap-paradas",LN.value);lat()};LM.oninput=function(){gravar("zap-msg-entregas",LM.value);lat()};
+$("llimpar").onclick=function(){if(LN.value.trim()&&!confirm("Apagar a lista de paradas?"))return;LN.value="";feitos={};gravar("zap-paradas","");gravar("zap-feitos","{}");lat();LN.focus()};
+
+M.value=ler("zap-msg");LN.value=ler("zap-paradas");
+LM.value=ler("zap-msg-entregas")||"Olá! Sou o entregador do Mercado Livre e passo aí hoje com a sua entrega. Até que horas vocês ficam abertos?";
+aba(ler("zap-aba")||"um");at();lat();
 </script>
 </body>
 </html>
